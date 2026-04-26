@@ -1,4 +1,0 @@
-C:/Users/AW/Desktop/Dispersive SWE 1D/build/CMakeFiles/sim_viewer.dir
-C:/Users/AW/Desktop/Dispersive SWE 1D/build/CMakeFiles/test_sim.dir
-C:/Users/AW/Desktop/Dispersive SWE 1D/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/AW/Desktop/Dispersive SWE 1D/build/CMakeFiles/ZERO_CHECK.dir
