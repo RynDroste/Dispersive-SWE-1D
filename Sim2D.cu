@@ -1198,8 +1198,8 @@ Sim2D::Sim2D()
 
     CUDA_CHECK(cudaMemcpyToSymbol(c_Depth_2D, Depth_2D, DEPTH_NUM_2D * sizeof(float)));
 
-    ResetTerrain(1);
-    ResetWater(0, 2.0f);
+    ResetTerrain(0);
+    ResetWater(0, 12.0f);
 }
 
 int Sim2D::Release(void)

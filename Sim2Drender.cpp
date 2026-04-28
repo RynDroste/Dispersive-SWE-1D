@@ -514,13 +514,15 @@ int main(int /*argc*/, char** /*argv*/)
     UploadFloatTexture(htildeTex,  N, sim.htilde);
 
     // ---------- UI / interaction state ----------
-    int   resetTerrainType = 1;
+    int   resetTerrainType = 0;
     int   resetWaterType   = 0;
-    float resetWaterLevel  = 2.0f;
+    float resetWaterLevel  = 12.0f;
     bool  sweOnly          = false;
     bool  paused           = false;
     bool  stepOnce         = false;
     int   substeps         = 1;
+    int   slowMo           = 2;          // run one sim step every slowMo frames (1 = realtime)
+    int   slowMoAcc        = 0;
 
     float editSize         = 0.06f;
     float editFactor       = 1.0f;
@@ -538,10 +540,15 @@ int main(int /*argc*/, char** /*argv*/)
 
         // --------- Step the simulation ---------
         if (!paused) {
-            for (int s = 0; s < substeps; ++s) sim.SimStep(sweOnly);
+            // slowMo > 1  =>  only step once every slowMo frames
+            if (++slowMoAcc >= slowMo) {
+                slowMoAcc = 0;
+                for (int s = 0; s < substeps; ++s) sim.SimStep(sweOnly);
+            }
         } else if (stepOnce) {
             sim.SimStep(sweOnly);
             stepOnce = false;
+            slowMoAcc = 0;
         }
 
         // --------- Refresh dynamic textures ---------
@@ -592,6 +599,7 @@ int main(int /*argc*/, char** /*argv*/)
         ImGui::Checkbox("Pause", &paused); ImGui::SameLine();
         if (ImGui::Button("Step")) stepOnce = true;
         ImGui::SliderInt("Substeps / frame", &substeps, 1, 8);
+        ImGui::SliderInt("Slow-mo (1 step / N frames)", &slowMo, 1, 16);
 
         ImGui::Separator();
         ImGui::TextUnformatted("Boundary");
@@ -609,8 +617,10 @@ int main(int /*argc*/, char** /*argv*/)
             UploadFloatTexture(terrainTex, N, sim.terrain);
         }
         if (sim.boundaryMode == 1) {
-            ImGui::SliderInt  ("Sponge width",    &sim.spongeWidth,    1, 64);
-            ImGui::SliderFloat("Sponge strength", &sim.spongeStrength, 0.f, 0.5f, "%.3f");
+            sim.spongeWidth    = 1;
+            sim.spongeStrength = 0.f;
+            ImGui::Text("Sponge width:    %d (fixed)", sim.spongeWidth);
+            ImGui::Text("Sponge strength: %.3f (fixed)", sim.spongeStrength);
             ImGui::Text("Rest water level: %.2f (set by Reset water)", sim.restWaterLevel);
         }
 

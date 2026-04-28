@@ -118,9 +118,9 @@ public:
     // restWaterLevel is the target water level for the sponge; it is set
     // automatically by ResetWater(type, level).
     // ---------------------------------------------------------------------
-    int   boundaryMode    = 0;
-    int   spongeWidth     = 16;
-    float spongeStrength  = 0.08f;
+    int   boundaryMode    = 1;
+    int   spongeWidth     = 1;
+    float spongeStrength  = 0.f;
     float restWaterLevel  = 0.f;
 
     // ---------------------------------------------------------------------
