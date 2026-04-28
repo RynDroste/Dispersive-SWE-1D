@@ -108,6 +108,22 @@ public:
     float time;
 
     // ---------------------------------------------------------------------
+    // Boundary mode:
+    //   0 = reflective walls (high terrain ring + zeroed h on the outer
+    //       cells + hard q zeroing in kernel_recombine_q*).
+    //   1 = absorbing sponge layer (no walls; an outer band of width
+    //       spongeWidth applies a per-step ramp-shaped damping to all
+    //       perturbation quantities and relaxes h toward restWaterLevel,
+    //       so outgoing waves are dissipated before they hit the boundary).
+    // restWaterLevel is the target water level for the sponge; it is set
+    // automatically by ResetWater(type, level).
+    // ---------------------------------------------------------------------
+    int   boundaryMode    = 0;
+    int   spongeWidth     = 16;
+    float spongeStrength  = 0.08f;
+    float restWaterLevel  = 0.f;
+
+    // ---------------------------------------------------------------------
     // API
     // ---------------------------------------------------------------------
     Sim2D();

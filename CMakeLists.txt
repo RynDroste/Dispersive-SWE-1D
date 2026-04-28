@@ -46,6 +46,37 @@ set_target_properties(sim_viewer PROPERTIES
 )
 
 # ---------------------------------------------------------------------------
+# 2D viewer executable -- builds only if Sim2Drender.cpp + Sim2D.cu exist.
+# ---------------------------------------------------------------------------
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Sim2Drender.cpp" AND
+   EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Sim2D.cu")
+    add_executable(sim2d_viewer
+        Sim2Drender.cpp
+        Sim2D.cu
+    )
+    target_link_libraries(sim2d_viewer PRIVATE
+        CUDA::cudart
+        CUDA::cufft
+        glfw
+        glad::glad
+        imgui::imgui
+        OpenGL::GL
+    )
+    target_include_directories(sim2d_viewer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    set_target_properties(sim2d_viewer PROPERTIES
+        CUDA_SEPARABLE_COMPILATION OFF
+        WIN32_EXECUTABLE FALSE
+    )
+    if(WIN32)
+        add_custom_command(TARGET sim2d_viewer POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_RUNTIME_DLLS:sim2d_viewer>
+                $<TARGET_FILE_DIR:sim2d_viewer>
+            COMMAND_EXPAND_LISTS)
+    endif()
+endif()
+
+# ---------------------------------------------------------------------------
 # Validation harness (Test.cu) -- builds only if Test.cu exists.
 # ---------------------------------------------------------------------------
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Test.cu")

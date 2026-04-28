@@ -37,18 +37,18 @@ Since SWE uses leapfrog with $\tilde h$ stored at $t+\Delta t/2$ and $\tilde q$ 
 
 ### Bulk SWE Solver
 
-- Adopt the scheme of *"A staggered conservative scheme for every Froude number in rapidly varied shallow water flows."* (Stelling & Duinmeijer, 2003).
+Adopt the scheme of *"A staggered conservative scheme for every Froude number in rapidly varied shallow water flows."* (Stelling & Duinmeijer, 2003).
 
 ### Transport Surface Flux and Surface Height with $\bar u$
 
-- Use the half-step bulk velocity $\bar u^{t+\Delta t/2} = (\bar u^t+\bar u^{t+\Delta t})/2$ for semi-Lagrangian backtracking, calling `SampleCubicClamped_d` to fetch `qtilde_dummy` at $x-\Delta t\,\bar u^{t+\Delta t/2}$. Near dry cells (where `h<0.01` on the side along the motion direction), zero out to prevent surface waves from being pushed into waterless regions. Corresponds to the $-\bar u\cdot\nabla\tilde q$ term in Eq. 15.
+- Use the half-step bulk velocity $\bar u^{t+\Delta t/2} = (\bar u^t+\bar u^{t+\Delta t})/2$ for semi-Lagrangian backtracking, calling `SampleCubicClamped_d` to fetch `qtilde_dummy` at $x-\Delta t\,\bar u^{t+\Delta t/2}$. Near dry cells.
 - At each face, compute $\nabla\cdot\bar u$ via 2nd-order differencing of the average velocities at the two neighboring faces. Multiply the negative divergence by $\gamma=1/4$, then apply $\tilde q\,\mathrel{*}=\,\exp(-\nabla\cdot\bar u\cdot\Delta t)$. 
 - $\tilde h$ is at cell centers, using first-order differencing `ubarNew[x] - ubarNew[x-1]`. Same negative divergence × 0.25 + `exp(...)` treatment.
 
 ### Bulk-Advected Surface Displacement Update of $h$
 
 - Use $\bar u^{t+\Delta t}$ to do a half-step semi-Lagrangian backtrack of $\tilde h$ to time $t+\Delta t$ at face positions, then multiply by $\bar u^{t+\Delta t}$ to obtain the flux $\breve q = \tilde{\bar h}\,\bar u$.
-- For each cell center, pass each of the left and right faces through `Limit_flow_rate_d` once. When both sides are dry / the termination condition triggers, zero out the corresponding face flux, and finally `h ← max(0, h_dummy − dt·(q_r − q_l)/dx)`. This step deducts the transport flux from $h$ first; the remaining bulk + surface portions are deducted again.
+- For each cell center, pass each of the left and right faces through `Limit_flow_rate_d` once. When both sides are dry / the termination condition triggers, zero out the corresponding face flux, and finally `h ← max(0, h_dummy − dt·(q_r − q_l)/dx)`.
 
 ### Recombine Fluxes and Final Water Height Update
 
